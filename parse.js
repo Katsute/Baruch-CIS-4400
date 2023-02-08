@@ -2,45 +2,27 @@ const fs = require("fs");
 const rl = require("readline");
 
 async function main(){
-    const OUT = {
-        "HEAT/HOT WATER": null,
-        "Water System": null,
-        "Sewer": null,
-        "PLUMBING": null,
-        "General Construction/Plumbing": null,
-        "WATER LEAK": null,
-        "Root/Sewer/Sidewalk Condition": null,
-        "Water Conservation": null,
-        "Drinking": null,
-        "Plumbing": null,
-        "Water Quality": null,
-        "Standing Water": null,
-        "Indoor Sewage": null,
-        "Drinking Water": null,
-        "Bottled Water": null,
-    };
+    const OUT = {};
 
-    for(const k in OUT){
-        OUT[k] = fs.createWriteStream(`${k.replace(/ |\//g, '-').toLowerCase()}.csv`);
-    }
-
-    let x = 0, w = 0;
+    let x = 0;
+    let header;
+    // read stream
     for await (const ln of rl.createInterface({ input: fs.createReadStream("311.csv"), crlfDelay: Infinity})){
         const col = ln.split(',');
-        if(x++ == 0) // write header
-            for(const k in OUT)
-                OUT[k].write(ln + '\n');
+        if(x++ == 0) // header
+            header = ln;
         else{
-            const match = col[5];
-            for(const k in OUT){
-                if(match === k){
-                    OUT[k].write(ln + '\n');
-                    console.log(`${++w}/${x}`);
-                }
+            const k = col[5].replace(/ |\//g, '-').toLowerCase();
+            if(!OUT[k]){ // new file
+                OUT[k] = fs.createWriteStream(`${k}.csv`);
+                OUT[k].write(header);
             }
+            OUT[k].write('\n' + ln); // append
+            console.log(x);
         }
     }
 
+    // close
     for(const k in OUT)
         OUT[k].end();
 }
