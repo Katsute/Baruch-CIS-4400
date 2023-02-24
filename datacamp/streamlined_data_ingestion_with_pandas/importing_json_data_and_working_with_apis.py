@@ -60,7 +60,7 @@ print(cafes.dtypes)
 
 # Create dictionary to query API for cafes in NYC
 parameters = {"term": "cafe",
-          	  "location": "NYC"}
+                "location": "NYC"}
 
 # Query the Yelp API with headers and params set
 response = requests.get(base_url=api_url,
@@ -118,7 +118,7 @@ print(flat_cafes.head())
 # Specify record path to get categories data
 flat_cafes = json_normalize(data["businesses"],
                             sep="_",
-                    		record_path="categories")
+                            record_path="categories")
 
 # View the data
 print(flat_cafes.head())
@@ -128,13 +128,13 @@ print(flat_cafes.head())
 # Load other business attributes and set meta prefix
 flat_cafes = json_normalize(data["businesses"],
                             sep="_",
-                    		record_path="categories",
-                    		meta=["name",
+                            record_path="categories",
+                            meta=["name",
                                   "alias",
                                   "rating",
-                          		  ["coordinates", "latitude"],
-                          		  ["coordinates", "longitude"]],
-                    		meta_prefix="biz_")
+                                    ["coordinates", "latitude"],
+                                    ["coordinates", "longitude"]],
+                            meta_prefix="biz_")
 
 # View the data
 print(flat_cafes.head())
